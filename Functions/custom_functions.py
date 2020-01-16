@@ -63,3 +63,16 @@ def create_histogram_plus_boxplot(series, var_name, color, ylabel, xlabel, size)
     plt.yticks([])
     
     plt.show()
+
+
+def barplot(count_series, xlab, ylab, title, color, labels, figure_size = (12, 10), adjust = False):
+    plt.figure(figsize = figure_size)
+    plt.bar(count_series.index, count_series, color = color, edgecolor = "black")
+    plt.xticks(count_series.index, labels)
+    plt.ylabel(ylab)
+    plt.xlabel(xlab)
+    plt.title(title)
+    if adjust:
+        for tick in plt.gca().xaxis.get_major_ticks():
+            tick.label.set_fontsize(10)
+    plt.show()
