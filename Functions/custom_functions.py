@@ -25,7 +25,7 @@ def create_histogram_plus_boxplot(series, var_name, color, ylabel, xlabel, size)
     
     '''
     Function that creates combination of histogram and boxplot for pandas dataseries.
-    Making it easier to observe distribution of a particular varibale
+    Making it easier to observe distribution of a particular variable
     
     Input
            : series -> type : pandas series or list
@@ -66,13 +66,40 @@ def create_histogram_plus_boxplot(series, var_name, color, ylabel, xlabel, size)
 
 
 def barplot(count_series, xlab, ylab, title, color, labels, figure_size = (12, 10), adjust = False):
+    
+    '''
+    Function that creates barplot for pandas dataseries using the counts.
+    
+    Input
+           : count_series -> type : pandas series
+           : xlab -> name of the x axis -> type : string
+           : ylab -> name of the y axis -> type : string
+           : title -> title label -> type : string
+           : color -> color(s) of the barplot -> type : any iterable object(list, string, tuple, etc)
+           : labels -> labels in which order you want bars of the barplot -> type : list or tuple or any iterable
+           : figure_size -> size of the figure -> type : tuple -> default : (12,10)
+           : adjust -> adjusts the xaxis label if they are too big -> type : boolean -> default : False
+    
+    Output : Returns nothing
+    '''
+
+    # Creates an empty figure
     plt.figure(figsize = figure_size)
+    
+    # Creates an barplot
     plt.bar(count_series.index, count_series, color = color, edgecolor = "black")
+    
+    # Setting xticks and labels for xticks
     plt.xticks(count_series.index, labels)
+    
+    # Setting title and label for both axis
     plt.ylabel(ylab)
     plt.xlabel(xlab)
     plt.title(title)
+    
+    # Adjust size of xaxis labels 
     if adjust:
         for tick in plt.gca().xaxis.get_major_ticks():
             tick.label.set_fontsize(10)
+    
     plt.show()
