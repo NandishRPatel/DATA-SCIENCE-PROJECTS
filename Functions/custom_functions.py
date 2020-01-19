@@ -65,7 +65,7 @@ def create_histogram_plus_boxplot(series, var_name, color, ylabel, xlabel, size)
     plt.show()
 
 
-def barplot(count_series, xlab, ylab, title, color, labels, figure_size = (12, 10), adjust = False):
+def barplot(count_series, xlab, ylab, title, color, labels, figure_size = (12, 10), adjust = False, xrotation = 0):
     
     '''
     Function that creates barplot for pandas dataseries using the counts.
@@ -90,7 +90,7 @@ def barplot(count_series, xlab, ylab, title, color, labels, figure_size = (12, 1
     plt.bar(count_series.index, count_series, color = color, edgecolor = "black")
     
     # Setting xticks and labels for xticks
-    plt.xticks(count_series.index, labels)
+    plt.xticks(count_series.index, labels, rotation = xrotation)
     
     # Setting title and label for both axis
     plt.ylabel(ylab)
