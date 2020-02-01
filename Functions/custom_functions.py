@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.patches as mpatch
+import matplotlib.gridspec as gridspec
 
 
 # Setting matplotlib parameters
@@ -103,3 +104,33 @@ def barplot(count_series, xlab, ylab, title, color, labels, figure_size = (12, 1
             tick.label.set_fontsize(10)
     
     plt.show()
+
+
+def create_cluster_histo(var_name, values, xlab, ncluster = 4, color = ["royalblue", "tomato", "seagreen", "gold"], 
+                        figsize = (20, 20)):
+
+    fig = plt.figure(figsize = figsize)
+    outer = gridspec.GridSpec(ncluster//2, ncluster//2, wspace = 0.2, hspace = 0.2)
+
+    for i in range(ncluster):
+        inner = gridspec.GridSpecFromSubplotSpec(2, 1, subplot_spec = outer[i], wspace = 0.1, hspace = 0.1)
+
+        for j in range(ncluster//2):
+            ax = plt.Subplot(fig, inner[j])
+            if j == 0:
+                ax.hist(values[i], edgecolor = "black", color = color[i])
+                ax.set_xticks([])
+                ax.set_title("Cluster" + str(i + 1), fontsize = 20)
+            else:
+                ax.boxplot(values[i], boxprops = dict(color = color[i]), vert = False)
+                ax.set_yticks([])
+
+            fig.add_subplot(ax)
+
+    fig.text(0.5, 0.92, var_name + ' Across Various Cluster', horizontalalignment = 'center', verticalalignment = 'center', 
+             fontsize = 22)
+    fig.text(0.5, 0.1, xlab, horizontalalignment = 'center', verticalalignment = 'center', 
+             fontsize = 20)
+    fig.text(0.085, 0.5, 'Frequency', horizontalalignment = 'center', verticalalignment = 'center', 
+             fontsize = 20, rotation = 90)
+    #fig.show()
