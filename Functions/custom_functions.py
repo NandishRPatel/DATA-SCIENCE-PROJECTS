@@ -179,16 +179,16 @@ def create_cluster_bar(var_name, values, max_possible_val, xlab, ncluster = 4, c
     
     #fig.show()
     
-def create_cluster_stacked_bar(var_name, sizes, values, ncluster = 4, fontsize = 22, colors_bar = ["royalblue", "pink"],
-                               colors_text = ["blue", "hotpink"], figsize = (15,10)):
+def create_cluster_stacked_bar(var_name, sizes, values, labels = ["Female", "Male"], ncluster = 4, fontsize = 22, 
+                               colors_bar = ["royalblue", "pink"], colors_text = ["blue", "hotpink"], figsize = (15,10)):
     
     x = [i + 1 for i in range(ncluster)]
     
     plt.figure(figsize = figsize)
     
-    plt.bar(x, height = sizes, color = colors_bar[1], label = "Female")
+    plt.bar(x, height = sizes, color = colors_bar[1], label = labels[0])
     
-    plt.bar(x, height = values, color = colors_bar[0], label = "Male")
+    plt.bar(x, height = values, color = colors_bar[0], label = labels[1])
     
     plt.xticks(x)
     
@@ -196,7 +196,7 @@ def create_cluster_stacked_bar(var_name, sizes, values, ncluster = 4, fontsize =
     
     plt.ylabel("Counts")
     
-    plt.title("Distribution of " + var_name)
+    plt.title(var_name + " Insights")
     
     for i in range(4):
         
@@ -204,7 +204,7 @@ def create_cluster_stacked_bar(var_name, sizes, values, ncluster = 4, fontsize =
         
         text1 = str(values[i]) + "(" + str(percentage) + "%)"
         
-        text2 = str(sizes[i] - values[i]) + "(" + str(100 - percentage) + "%)"
+        text2 = str(sizes[i] - values[i]) + "(" + str(round(100 - percentage, 1)) + "%)"
         
         plt.text(i + 1, values[i] + 500, text1 , horizontalalignment = 'center', verticalalignment = 'center', 
                  fontdict = {"color" : colors_text[0] , "size" : fontsize})
