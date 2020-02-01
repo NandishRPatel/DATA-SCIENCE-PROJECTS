@@ -178,3 +178,64 @@ def create_cluster_bar(var_name, values, max_possible_val, xlab, ncluster = 4, c
     fig.text(0.085, 0.5, 'Counts', horizontalalignment = 'center', verticalalignment = 'center', fontsize = 20, rotation = 90)
     
     #fig.show()
+    
+def create_cluster_stacked_bar(var_name, sizes, values, ncluster = 4, fontsize = 22, colors_bar = ["royalblue", "pink"],
+                               colors_text = ["blue", "hotpink"], figsize = (15,10)):
+    
+    x = [i + 1 for i in range(ncluster)]
+    
+    plt.figure(figsize = figsize)
+    
+    plt.bar(x, height = sizes, color = colors_bar[1], label = "Female")
+    
+    plt.bar(x, height = values, color = colors_bar[0], label = "Male")
+    
+    plt.xticks(x)
+    
+    plt.xlabel("Clusters")
+    
+    plt.ylabel("Counts")
+    
+    plt.title("Distribution of " + var_name)
+    
+    for i in range(4):
+        
+        percentage = round(values[i] / sizes[i] * 100, 1)
+        
+        text1 = str(values[i]) + "(" + str(percentage) + "%)"
+        
+        text2 = str(sizes[i] - values[i]) + "(" + str(100 - percentage) + "%)"
+        
+        plt.text(i + 1, values[i] + 500, text1 , horizontalalignment = 'center', verticalalignment = 'center', 
+                 fontdict = {"color" : colors_text[0] , "size" : fontsize})
+        
+        plt.text(i + 1, sizes[i] + 500, text2, horizontalalignment = 'center', verticalalignment = 'center', 
+                 fontdict = {"color" : colors_text[1], "size" : fontsize})
+    
+    plt.legend(prop = {'size': 18}, fancybox = True)
+    
+    plt.show()
+
+
+def create_cluster_donut_chart(var_name, values, labels = ["Card", "EFTPOS", "Cash", "Other"], ncluster = 4, 
+         color = ["royalblue", "tomato", "seagreen", "gold"], figsize = (20, 12)):
+    
+    fig, axes = plt.subplots(nrows = ncluster // 2, ncols = ncluster // 2, figsize = figsize)
+    
+    ax = axes.flatten()
+    
+    for i in range(ncluster):
+        
+        leg = ax[i].pie(values[i], colors = ["royalblue", "tomato", "seagreen", "yellow"], autopct = '%1.1f%%', 
+                  startangle = 90, pctdistance = 0.80, textprops = {"fontsize" : 16})
+        
+        ax[i].add_artist(plt.Circle((0, 0), 0.60, fc = 'white'))
+        
+        ax[i].set_title("Cluster" + str(i + 1), fontsize = 18)
+    
+    ax[i].legend(leg[0], labels, prop = {"size" : 18}, bbox_to_anchor = (-0.25, 1.4), fancybox = True)
+    
+    fig.text(0.5, 0.92, var_name + ' Across Various Cluster', horizontalalignment = 'center', verticalalignment = 'center',
+             fontsize = 22)
+    
+    #fig.show()
