@@ -227,7 +227,7 @@ def create_cluster_donut_chart(var_name, values, labels = ["Card", "EFTPOS", "Ca
     for i in range(ncluster):
         
         leg = ax[i].pie(values[i], colors = ["royalblue", "tomato", "seagreen", "yellow"], autopct = '%1.1f%%', 
-                  startangle = 90, pctdistance = 0.80, textprops = {"fontsize" : 16})
+                  startangle = 90, pctdistance = 0.80, textprops = {"fontsize" : 16}, explode = (0.03,) * len(values))
         
         ax[i].add_artist(plt.Circle((0, 0), 0.60, fc = 'white'))
         
