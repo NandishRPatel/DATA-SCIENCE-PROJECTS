@@ -239,3 +239,26 @@ def create_cluster_donut_chart(var_name, values, labels = ["Card", "EFTPOS", "Ca
              fontsize = 22)
     
     #fig.show()
+    
+def create_cluster_bar_side(var_name, values, labels = ["Yes", "No", "Unknown"], ncluster = 4, width = 0.5, 
+         colors = ["royalblue", "tomato", "seagreen"], figsize = (20, 12)):
+    
+    for i in range(ncluster):
+        plt.bar(i + 1, values[i][0], width = width/3, align = "center", edgecolor = "", color = colors[0])
+        plt.bar(i + 1 - width/3, values[i][1], width = width/3, align = "center", edgecolor = "", color = colors[1])
+        plt.bar(i + 1 + width/3, values[i][2], width = width/3, align = "center", edgecolor = "", color = colors[2])
+    
+    plt.xticks([i + 1 for i in range(ncluster)])
+    
+    patches = [ plt.plot([],[], marker = "s", ms = 10, ls = "", mec = None, color = colors[i], 
+            label = labels[i])[0]  for i in range(len(colors)) ]
+    
+    plt.legend(handles = patches, loc = 'upper right', ncol = 1, prop = {"size" : 16})
+    
+    plt.xlabel("Clusters")
+    
+    plt.ylabel("Count/Frequency")
+    
+    plt.title(var_name + " Across Various Clusters")
+    
+    plt.show()
