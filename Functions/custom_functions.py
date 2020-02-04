@@ -6,6 +6,7 @@ import numpy as np
 import seaborn as sns
 import matplotlib.patches as mpatch
 import matplotlib.gridspec as gridspec
+from matplotlib_venn import venn2
 
 
 # Setting matplotlib parameters
@@ -261,4 +262,47 @@ def create_cluster_bar_side(var_name, values, labels = ["Yes", "No", "Unknown"],
     
     plt.title(var_name + " Across Various Clusters")
     
+    plt.show()
+    
+
+def create_cluster_venn_diagrams(dog_owners, cat_owners, both_owners, total, sizes, ncluster = 4, title = "Pets Insight", 
+                                colors = ['blue', 'salmon', "#E1BCFF"], labels = ["Dog Owners", "Cat Owners", "BOTH"], 
+                                figsize = (20,16)):
+
+
+    fig, axes = plt.subplots(ncols = ncluster//2, nrows = ncluster//2, figsize = figsize)
+
+    ax = axes.flatten()
+
+
+    for i in range(ncluster):
+        
+        v2 = venn2(subsets = {
+                                '10': dog_owners[i], '01': cat_owners[i], '11': both_owners[i]
+                             },
+                   set_colors = colors, alpha = 0.4, ax = ax[i])
+
+        for idx, subset in enumerate(v2.set_labels):v2.set_labels[idx].set_visible(False)
+
+        v2.get_label_by_id('10').set_text('%d\n(%.0f%%)' % (dog_owners[i], dog_owners[i] / total[i] * 100))
+        v2.get_label_by_id('01').set_text('%d\n(%.0f%%)' % (cat_owners[i], cat_owners[i] / total[i] * 100))
+        v2.get_label_by_id('11').set_text('%d\n(%.0f%%)' % (both_owners[i], both_owners[i] / total[i] * 100))
+
+        ax[i].text(0.0, -0.55, "Total = " +  str(total[i]) + "\nCluster Size = " + str(sizes[i]), 
+                   horizontalalignment = 'center', verticalalignment = 'center', fontsize = 20)
+
+        ax[i].set_title("Cluster" + str(i + 1))
+
+        for text in v2.set_labels:
+            text.set_fontsize(18)
+
+        for text in v2.subset_labels:
+            text.set_fontsize(20)    
+
+
+    patches = [ plt.plot([],[], marker = "o", ms = 18, ls = "", mec = None, color = colors[i], alpha = 0.4,
+                label = labels[i])[0]  for i in range(len(colors)) ]
+
+    plt.legend(patches, labels, prop = {"size" : 18}, bbox_to_anchor = (0.1, 1.3), fancybox = True)
+    fig.text(0.47, 0.9, title, fontsize = 24)
     plt.show()
