@@ -284,9 +284,9 @@ def create_cluster_venn_diagrams(dog_owners, cat_owners, both_owners, total, siz
 
         for idx, subset in enumerate(v2.set_labels):v2.set_labels[idx].set_visible(False)
 
-        v2.get_label_by_id('10').set_text('%d\n(%.0f%%)' % (dog_owners[i], dog_owners[i] / total[i] * 100))
-        v2.get_label_by_id('01').set_text('%d\n(%.0f%%)' % (cat_owners[i], cat_owners[i] / total[i] * 100))
-        v2.get_label_by_id('11').set_text('%d\n(%.0f%%)' % (both_owners[i], both_owners[i] / total[i] * 100))
+        v2.get_label_by_id('10').set_text('%d\n(%.1f%%)' % (dog_owners[i], dog_owners[i] / total[i] * 100))
+        v2.get_label_by_id('01').set_text('%d\n(%.1f%%)' % (cat_owners[i], cat_owners[i] / total[i] * 100))
+        v2.get_label_by_id('11').set_text('%d\n(%.1f%%)' % (both_owners[i], both_owners[i] / total[i] * 100))
 
         ax[i].text(0.0, -0.55, "Total = " +  str(total[i]) + "\nCluster Size = " + str(sizes[i]), 
                    horizontalalignment = 'center', verticalalignment = 'center', fontsize = 20)
