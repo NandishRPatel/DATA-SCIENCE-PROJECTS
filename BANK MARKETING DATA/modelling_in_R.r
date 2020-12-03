@@ -45,3 +45,12 @@ new_data["contact"] <- factor(gsub("contact_", "", contact_cat))
 
 # Adding response variable to the dataframe
 new_data["subscribed"] <- y_train_SMOTE
+
+## Since outcome variable is dichotomous we will use binomial response
+##  distributition with GLM.
+glm_1 = glm(subscribed ~ ., family = binomial(), data = new_data)
+
+summary(glm_1)
+
+car::Anova(glm_1)
+
