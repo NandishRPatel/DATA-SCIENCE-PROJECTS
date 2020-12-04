@@ -54,3 +54,16 @@ summary(glm_1)
 
 car::Anova(glm_1)
 
+
+glm_2 = glm(subscribed ~ . + I(balance ^ 2) + I(day ^ 2), family = binomial(), data = new_data)
+
+summary(glm_2)
+
+car::Anova(glm_2)
+
+
+
+car::avPlots(glm_1, terms = ~ balance)
+
+
+plot(glm_1)

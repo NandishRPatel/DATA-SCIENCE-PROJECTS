@@ -1,0 +1,98 @@
+---
+title: "Bank Marketing Data Analysis"
+output:
+  html_document:
+    df_print: paged
+---
+
+# 1. Reading Data
+
+```{r data_reading}
+# Reading the data
+## Training data - Covariates
+X_train_SMOTE = read.csv("./DATA/X_train_SMOTE.csv")
+## Training data - Response Variable
+y_train_SMOTE = read.csv("./DATA/y_train_SMOTE.csv", header = F)
+```
+
+# 2. Data Preprocessing
+
+The data we preprocessed in [python notebook](https://github.com/nandishpatel1996/DATA-SCIENCE-PROJECTS/blob/master/BANK%20MARKETING%20DATA/Project_Notebook.ipynb) was suitable for analysis in python. For R we need to convert few dummy variables into factors.
+
+```{r data_preprocessing}
+## Job 
+job_cols <- as.matrix(X_train_SMOTE[7:17])
+job_cat <- factor(job_cols %*% 1:ncol(job_cols), 
+       labels = c("job_admin", colnames(job_cols)))
+
+## Marital status
+marital_cols <- as.matrix(X_train_SMOTE[18:19])
+marital_cat <- factor(marital_cols %*% 1:ncol(marital_cols), 
+                      labels = c("marital_divorced", colnames(marital_cols)))
+
+## Education
+education_cols <- as.matrix(X_train_SMOTE[20:22])
+education_cat <- factor(education_cols %*% 1:ncol(education_cols), 
+                      labels = c("education_primary", colnames(education_cols)))
+
+## Month
+month_cols <- as.matrix(X_train_SMOTE[23:33])
+month_cat <- factor(month_cols %*% 1:ncol(month_cols), 
+                      labels = c("month_apr", colnames(month_cols)))
+
+## Poutcome
+poutcome_cols <- as.matrix(X_train_SMOTE[34:36])
+poutcome_cat <- factor(poutcome_cols %*% 1:ncol(poutcome_cols), 
+                        labels = c("poutcome_failure", colnames(poutcome_cols)))
+
+## Contact
+contact_cols <- as.matrix(X_train_SMOTE[37:38])
+contact_cat <- factor(contact_cols %*% 1:ncol(contact_cols), 
+                       labels = c("contact_cellular", colnames(contact_cols)))
+```
+
+
+Now let's create a new dataframe just for our analysis in R.
+
+
+```{r data_preparation}
+# Creating a new dataframe
+data_R <- X_train_SMOTE[1:6]
+
+# Adding the newly created categorical variables to the dataframe
+data_R["job"] <- factor(gsub("job_", "", job_cat))
+data_R["marital"] <- factor(gsub("marital_", "", marital_cat))
+data_R["education"] <- factor(gsub("education_", "", education_cat))
+data_R["month"] <- factor(gsub("month_", "", month_cat))
+data_R["poutcome"] <- factor(gsub("poutcome_", "", poutcome_cat))
+data_R["contact"] <- factor(gsub("contact_", "", contact_cat))
+
+# Adding response variable to the dataframe
+data_R["subscribed"] <- y_train_SMOTE
+
+# Save the data for future use
+write.csv(data_R, "./DATA/train_R.csv", row.names = F)
+
+# Printing few rows of a dataframe
+head(data_R)
+```
+
+After preparing our dataframe, the next step will be modeling of this data mainly of the response variable in terms of predictor variables.
+
+# 3. Data Modeling
+
+Since the response variable `subscribed`(whether user subscribed to a term plan or not) is dichotomous we will use binomial response distributition to model it. We will go ahead and try different link functions and carry out various types of tests to check the significance of the covariates.
+
+```{r data_modeling}
+# Model fitting with all covariates with binomial response distribbution and logit link function
+glm_1 = glm(subscribed ~ ., family = binomial(), data = data_R)
+
+# Printing Summary of the model
+summary(glm_1)
+
+# Carrying out Type II test to check the significance of the variables as if they were added last in the model
+# We are using Anova() from car package
+car::Anova(glm_1)
+```
+
+By looking at the Anova type II test we can see that the variables `balance`, and `day` are statistically insignificant. We should analyse the added-variable plot to observe the relationship between those covariates and response variable.
