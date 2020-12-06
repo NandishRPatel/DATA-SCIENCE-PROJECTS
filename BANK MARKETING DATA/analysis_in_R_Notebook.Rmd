@@ -57,35 +57,35 @@ Now let's create a new dataframe just for our analysis in R.
 
 ```{r data_preparation}
 # Creating a new dataframe
-data_R <- X_train_SMOTE[1:6]
+data_R_train <- X_train_SMOTE[1:6]
 
 # Adding the newly created categorical variables to the dataframe
-data_R["job"] <- factor(gsub("job_", "", job_cat))
-data_R["marital"] <- factor(gsub("marital_", "", marital_cat))
-data_R["education"] <- factor(gsub("education_", "", education_cat))
-data_R["month"] <- factor(gsub("month_", "", month_cat))
-data_R["poutcome"] <- factor(gsub("poutcome_", "", poutcome_cat))
-data_R["contact"] <- factor(gsub("contact_", "", contact_cat))
+data_R_train["job"] <- factor(gsub("job_", "", job_cat))
+data_R_train["marital"] <- factor(gsub("marital_", "", marital_cat))
+data_R_train["education"] <- factor(gsub("education_", "", education_cat))
+data_R_train["month"] <- factor(gsub("month_", "", month_cat))
+data_R_train["poutcome"] <- factor(gsub("poutcome_", "", poutcome_cat))
+data_R_train["contact"] <- factor(gsub("contact_", "", contact_cat))
 
 # Adding response variable to the dataframe
-data_R["subscribed"] <- y_train_SMOTE
+data_R_train["subscribed"] <- y_train_SMOTE
 
 # Save the data for future use
-write.csv(data_R, "./DATA/train_R.csv", row.names = F)
+write.csv(data_R_train, "./DATA/train_data_R.csv", row.names = F)
 
 # Printing few rows of a dataframe
-head(data_R)
+head(data_R_train)
 ```
 
 After preparing our dataframe, the next step will be modeling of this data mainly of the response variable in terms of predictor variables.
 
 # 3. Data Modeling
 
-Since the response variable `subscribed`(whether user subscribed to a term plan or not) is dichotomous we will use binomial response distributition to model it. We will go ahead and try different link functions and carry out various types of tests to check the significance of the covariates.
+Since the response variable `subscribed`(whether user subscribed to a term plan or not) is dichotomous we will use binomial response distribution to model it. Also, few of the covariates are skewed in distribution since GLM doesn't require the covariates to be normal so the skewness in covariates is acceptable. We will go ahead and carry out various types of tests to check the significance of the covariates.
 
 ```{r data_modeling}
-# Model fitting with all covariates with binomial response distribbution and logit link function
-glm_1 = glm(subscribed ~ ., family = binomial(), data = data_R)
+# Model fitting with all covariates with binomial response distribution and logit link function
+glm_1 = glm(subscribed ~ ., family = binomial(), data = data_R_train)
 
 # Printing Summary of the model
 summary(glm_1)
@@ -95,4 +95,92 @@ summary(glm_1)
 car::Anova(glm_1)
 ```
 
-By looking at the Anova type II test we can see that the variables `balance`, and `day` are statistically insignificant. We should analyse the added-variable plot to observe the relationship between those covariates and response variable.
+By looking at the Anova type II test we can see that the variables `balance`, and `day` are statistically insignificant which means these covariates are not bringing any significant information to the model. We should analyze the added-variable plot to observe the relationship between those covariates and response variable.
+
+```{r data_diagnosis1}
+par(mfrow = c(1, 2))
+car::avPlot(glm_1, variable = "balance")
+car::avPlot(glm_1, variable = "day")
+```
+
+By looking at the added-variable plot we can see that there are horizontal lines in both plots which suggests the terms `balance` and `day` are of no use and there is no hint of non-linear relation between these covariates and response variable `subscribed`. So let's go ahead and remove these covariates from the model and fir the model again.
+
+```{r data_modeling2}
+# Model fitting with all covariates with binomial response distribution and logit link function.
+glm_2 = glm(subscribed ~ . - balance - day, family = binomial(), data = data_R_train)
+
+# Printing Summary of the model
+summary(glm_2)
+
+# Carrying out Type II test to check the significance of the variables as if they were added last in the model. We are using Anova() from car package.
+car::Anova(glm_2)
+```
+
+As we can see from the above output that all the covariates are significant. We can also see that it has residual deviance of 41642 on 63721 degrees of freedom, so the model is an adequate fit. Now first let's prepare data for the evaluating the model.
+
+# 4. Data Preparation of Validation dataset
+
+```{r data_validation}
+# Validation data
+X_valid = read.csv("./DATA/X_valid.csv")
+y_valid = read.csv("./DATA/y_valid.csv", header = F)
+
+## Job 
+job_cols <- as.matrix(X_valid[7:17])
+job_cat <- factor(job_cols %*% 1:ncol(job_cols), labels = c("job_admin", colnames(job_cols)))
+
+## Marital status
+marital_cols <- as.matrix(X_valid[18:19])
+marital_cat <- factor(marital_cols %*% 1:ncol(marital_cols), labels = c("marital_divorced", colnames(marital_cols)))
+
+## Education
+education_cols <- as.matrix(X_valid[20:22])
+education_cat <- factor(education_cols %*% 1:ncol(education_cols), labels = c("education_primary", colnames(education_cols)))
+
+## Month
+month_cols <- as.matrix(X_valid[23:33])
+month_cat <- factor(month_cols %*% 1:ncol(month_cols), labels = c("month_apr", colnames(month_cols)))
+
+## Poutcome
+poutcome_cols <- as.matrix(X_valid[34:36])
+poutcome_cat <- factor(poutcome_cols %*% 1:ncol(poutcome_cols), labels = c("poutcome_failure", colnames(poutcome_cols)))
+
+## Contact
+contact_cols <- as.matrix(X_valid[37:38])
+contact_cat <- factor(contact_cols %*% 1:ncol(contact_cols), labels = c("contact_cellular", colnames(contact_cols)))
+
+# Creating a new dataframe
+data_R_valid <- X_valid[1:6]
+
+# Adding the newly created categorical variables to the dataframe
+data_R_valid["job"] <- factor(gsub("job_", "", job_cat))
+data_R_valid["marital"] <- factor(gsub("marital_", "", marital_cat))
+data_R_valid["education"] <- factor(gsub("education_", "", education_cat))
+data_R_valid["month"] <- factor(gsub("month_", "", month_cat))
+data_R_valid["poutcome"] <- factor(gsub("poutcome_", "", poutcome_cat))
+data_R_valid["contact"] <- factor(gsub("contact_", "", contact_cat))
+
+# Adding response variable to the dataframe
+data_R_valid["subscribed"] <- y_valid
+```
+
+# 5. Model Evaluation
+
+Let's use model to make predictions and based on the predictions, let's assess the model performance.
+
+```{r model_performance}
+# Prediction using the model
+glm_2_pred = predict.glm(glm_2, newdata = data_R_valid[1:12], type = "r")
+
+# Predictions using GLM model
+prediction = as.factor(ifelse(glm_2_pred > 0.5, 1, 0))
+
+# Confusion Matrix 
+caret::confusionMatrix(reference = as.factor(y_valid$V1), data = prediction, positive = "1")
+```
+
+As we can see that there the specificity(= 85%) and sensitivity(= 69%). Also the overall accuracy is 83% which presents good predictive ability. All these metrics are adequate and we can rule that the model has good enough predictive power. Now let's go ahead and save the models for future use.
+
+```{r model_saving}
+saveRDS(glm_2, "./MODELS/GLM_2.rds")
+```
