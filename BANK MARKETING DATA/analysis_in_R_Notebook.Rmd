@@ -169,14 +169,25 @@ data_R_valid["subscribed"] <- y_valid
 Let's use model to make predictions and based on the predictions, let's assess the model performance.
 
 ```{r model_performance}
-# Prediction using the model
-glm_2_pred = predict.glm(glm_2, newdata = data_R_valid[1:12], type = "r")
+# Training dataset
+## Prediction using the model
+glm_2_pred_train = predict.glm(glm_2, newdata = data_R_train[1:12], type = "r")
 
-# Predictions using GLM model
-prediction = as.factor(ifelse(glm_2_pred > 0.5, 1, 0))
+## Predictions using GLM model
+prediction_train = as.factor(ifelse(glm_2_pred_train > 0.5, 1, 0))
 
-# Confusion Matrix 
-caret::confusionMatrix(reference = as.factor(y_valid$V1), data = prediction, positive = "1")
+## Confusion Matrix 
+caret::confusionMatrix(reference = as.factor(y_train_SMOTE$V1), data = prediction_train, positive = "1")
+
+# Validation dataset
+## Prediction using the model
+glm_2_pred_valid = predict.glm(glm_2, newdata = data_R_valid[1:12], type = "r")
+
+## Predictions using GLM model
+prediction_valid = as.factor(ifelse(glm_2_pred_valid > 0.5, 1, 0))
+
+## Confusion Matrix 
+caret::confusionMatrix(reference = as.factor(y_valid$V1), data = prediction_valid, positive = "1")
 ```
 
 As we can see that there the specificity(= 85%) and sensitivity(= 69%). Also the overall accuracy is 83% which presents good predictive ability. All these metrics are adequate and we can rule that the model has good enough predictive power. Now let's go ahead and save the models for future use.

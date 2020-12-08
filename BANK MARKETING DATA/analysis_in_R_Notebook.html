@@ -1952,14 +1952,51 @@ data_R_valid[&quot;subscribed&quot;] &lt;- y_valid</code></pre>
 <div id="model-evaluation" class="section level1">
 <h1>5. Model Evaluation</h1>
 <p>Let’s use model to make predictions and based on the predictions, let’s assess the model performance.</p>
-<pre class="r"><code># Prediction using the model
-glm_2_pred = predict.glm(glm_2, newdata = data_R_valid[1:12], type = &quot;r&quot;)
+<pre class="r"><code># Training dataset
+## Prediction using the model
+glm_2_pred_train = predict.glm(glm_2, newdata = data_R_train[1:12], type = &quot;r&quot;)
 
-# Predictions using GLM model
-prediction = as.factor(ifelse(glm_2_pred &gt; 0.5, 1, 0))
+## Predictions using GLM model
+prediction_train = as.factor(ifelse(glm_2_pred_train &gt; 0.5, 1, 0))
 
-# Confusion Matrix 
-caret::confusionMatrix(reference = as.factor(y_valid$V1), data = prediction, positive = &quot;1&quot;)</code></pre>
+## Confusion Matrix 
+caret::confusionMatrix(reference = as.factor(y_train_SMOTE$V1), data = prediction_train, positive = &quot;1&quot;)</code></pre>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction     0     1
+##          0 27684  4102
+##          1  4195 27777
+##                                           
+##                Accuracy : 0.8699          
+##                  95% CI : (0.8672, 0.8725)
+##     No Information Rate : 0.5             
+##     P-Value [Acc &gt; NIR] : &lt;2e-16          
+##                                           
+##                   Kappa : 0.7397          
+##                                           
+##  Mcnemar&#39;s Test P-Value : 0.3125          
+##                                           
+##             Sensitivity : 0.8713          
+##             Specificity : 0.8684          
+##          Pos Pred Value : 0.8688          
+##          Neg Pred Value : 0.8709          
+##              Prevalence : 0.5000          
+##          Detection Rate : 0.4357          
+##    Detection Prevalence : 0.5015          
+##       Balanced Accuracy : 0.8699          
+##                                           
+##        &#39;Positive&#39; Class : 1               
+## </code></pre>
+<pre class="r"><code># Validation dataset
+## Prediction using the model
+glm_2_pred_valid = predict.glm(glm_2, newdata = data_R_valid[1:12], type = &quot;r&quot;)
+
+## Predictions using GLM model
+prediction_valid = as.factor(ifelse(glm_2_pred_valid &gt; 0.5, 1, 0))
+
+## Confusion Matrix 
+caret::confusionMatrix(reference = as.factor(y_valid$V1), data = prediction_valid, positive = &quot;1&quot;)</code></pre>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##           Reference
